@@ -5,5 +5,5 @@
   tasks:
     - name: Create a file with content
       copy:
-        dest: /home/intellicon-admin/testfile.txt
+        dest: /root/testfile.txt
         content: "its working"
