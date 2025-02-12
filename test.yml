@@ -1,12 +1,9 @@
 ---
 - hosts: all
-  become: true  # Ensures the task runs as root
+  become: yes  # Ensures the task runs as root
   become_user: root
   tasks:
     - name: Create a file with content
       copy:
-        dest: /root/testfile.txt
+        dest: /home/intellicon-admin/testfile.txt
         content: "its working"
-        owner: root
-        group: root
-        mode: '0644'
