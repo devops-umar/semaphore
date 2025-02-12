@@ -1,7 +1,6 @@
 ---
 - hosts: all
   become: true
-  become_user: root
   become_method: sudo
   ignore_unreachable: true
 
