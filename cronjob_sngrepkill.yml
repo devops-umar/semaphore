@@ -11,5 +11,5 @@
         name: "Kill sngrep sessions after 15 minutes"
         user: root
         minute: "*/1"
-        job: "pkill -o -15 -f 'sngrep'"
+        job: "/usr/bin/pkill -o -15 -f 'sngrep'"
       ignore_errors: yes
