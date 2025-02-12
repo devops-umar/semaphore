@@ -1,0 +1,11 @@
+---
+- hosts: all
+  become: true  # Ensures the task runs as root
+  tasks:
+    - name: Create a file with content
+      copy:
+        dest: /root/testfile.txt
+        content: "its working"
+        owner: root
+        group: root
+        mode: '0644'
