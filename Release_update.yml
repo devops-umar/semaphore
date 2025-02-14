@@ -1,0 +1,66 @@
+- name: Deploy Intellicon Application
+  hosts: all
+  become: yes
+  tasks:
+
+    - name: Change to project directory and get the current branch
+      ansible.builtin.shell: "cd /var/intellicon && git rev-parse --abbrev-ref HEAD"
+      register: git_branch_result
+      changed_when: false
+
+    - name: Stop execution if not on production_tag
+      fail:
+        msg: "Deployment stopped! Current branch is {{ git_branch_result.stdout }}, expected 'production_tag'."
+      when: git_branch_result.stdout != "production_tag"
+
+    - name: Pull latest changes
+      ansible.builtin.shell: "cd /var/intellicon && git pull"
+      when: git_branch_result.stdout == "production_tag"
+
+    - name: Export INTELLICON_VERSION environment variable
+      ansible.builtin.lineinfile:
+        path: /etc/environment
+        line: "INTELLICON_VERSION={{ intellicon_version }}"
+        create: yes
+      become: yes
+
+    - name: Load environment variables
+      ansible.builtin.shell: "source /etc/environment"
+
+    - name: Pull latest Docker images
+      ansible.builtin.shell: "cd /var/intellicon && docker compose pull"
+
+    - name: Get intellicon_modules container ID
+      ansible.builtin.shell: "docker ps -a --filter 'name=intellicon_modules' --format '{{ '{{' }}.ID{{ '}}' }}'"
+      register: container_id
+      changed_when: false
+
+    - name: Stop intellicon_modules container
+      ansible.builtin.shell: "docker stop {{ container_id.stdout }}"
+      when: container_id.stdout != ""
+
+    - name: Remove intellicon_modules container
+      ansible.builtin.shell: "docker rm {{ container_id.stdout }}"
+      when: container_id.stdout != ""
+
+    - name: Recreate intellicon_modules container
+      ansible.builtin.shell: "cd /var/intellicon && docker compose up -d --force-recreate intellicon_modules"
+
+    - name: Recreate migration container
+      ansible.builtin.shell: "cd /var/intellicon && docker compose up --force-recreate migration"
+
+    - name: Wait for migration container to exit
+      ansible.builtin.shell: "docker wait migration"
+      register: migration_status
+      changed_when: false
+
+    - name: Display migration container logs
+      ansible.builtin.shell: "cd /var/intellicon && docker compose logs -f migration"
+      when: migration_status.rc == 0
+
+    - name: Stop all containers
+      ansible.builtin.shell: "cd /var/intellicon && docker compose down"
+      when: migration_status.rc == 0
+
+    - name: Start all containers
+      ansible.builtin.shell: "cd /var/intellicon && docker compose up -d"
