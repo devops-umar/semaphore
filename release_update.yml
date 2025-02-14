@@ -5,6 +5,8 @@
 
     - name: Change to project directory and get the current branch
       ansible.builtin.shell: "cd /var/intellicon && git rev-parse --abbrev-ref HEAD"
+      args:
+        chdir: /var/intellicon
       register: git_branch_result
       changed_when: false
 
