@@ -13,7 +13,7 @@
         msg: "Deployment stopped! Current branch is {{ git_branch_result.stdout }}, expected 'production_tag'."
       when: git_branch_result.stdout != "production_tag"
 
-    - name: Pull latest changes
+    - name: Git Pull latest changes
       ansible.builtin.shell: "cd /var/intellicon && git pull"
       when: git_branch_result.stdout == "production_tag"
 
