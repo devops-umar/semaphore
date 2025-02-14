@@ -1,14 +1,22 @@
-- name: Deploy Intellicon Application
-  hosts: all
-  become: yes
-  tasks:
+   - name: Deploy Intellicon Application
+     hosts: all
+     become: yes
+     tasks:
 
-    - name: Change to project directory and get the current branch
-      ansible.builtin.shell: "cd /var/intellicon && git rev-parse --abbrev-ref HEAD"
-      args:
-        chdir: /var/intellicon
-      register: git_branch_result
-      changed_when: false
+   - name: Change to project directory and get the current branch
+     ansible.builtin.shell: |
+       cd /var/intellicon
+       pwd
+       git status
+       git rev-parse --abbrev-ref HEAD
+     args:
+       chdir: /var/intellicon
+     register: git_branch_result
+     changed_when: false
+
+   - name: Debug Git branch output
+     debug:
+        msg: "Current branch is: {{ git_branch_result.stdout }}"
 
     - name: Stop execution if not on production_tag
       fail:
