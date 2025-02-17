@@ -13,7 +13,7 @@
       when: git_branch_result.stdout != "production_tag"
 
     - name: Git pull
-      shell: "cd /var/intellicon && git pull"
+      shell: "cd /var/intellicon && sudo git pull"
       register: git_pull_result
       ignore_errors: yes
 
