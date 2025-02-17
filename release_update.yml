@@ -2,19 +2,19 @@
   hosts: all
   become: yes
   tasks:
-    - name: Set safe directory for git
-      ansible.builtin.shell: |
-       git config --global --add safe.directory /var/intellicon
-      args:
-        chdir: /var/intellicon
-      become: yes
+#    - name: Set safe directory for git
+#      ansible.builtin.shell: |
+#       git config --global --add safe.directory /var/intellicon
+#      args:
+#        chdir: /var/intellicon
+#      become: yes
 
     - name: Change to project directory and get the current branch
       ansible.builtin.shell: |
         cd /var/intellicon
         pwd
-        git status
-        git rev-parse --abbrev-ref HEAD
+        git branch
+   #     git rev-parse --abbrev-ref HEAD
       args:
         chdir: /var/intellicon
       register: git_branch_result
@@ -24,10 +24,10 @@
       debug:
         msg: "Current branch is: {{ git_branch_result.stdout }}"
 
-    - name: Stop execution if not on production_tag
-      fail:
-        msg: "Deployment stopped! Current branch is {{ git_branch_result.stdout }}, expected 'production_tag'."
-      when: git_branch_result.stdout is defined and git_branch_result.stdout != "production_tag"
+#    - name: Stop execution if not on production_tag
+#      fail:
+#        msg: "Deployment stopped! Current branch is {{ git_branch_result.stdout }}, expected 'production_tag'."
+#      when: git_branch_result.stdout is defined and git_branch_result.stdout != "production_tag"
 
     - name: Git Pull latest changes
       ansible.builtin.shell: "cd /var/intellicon && git pull"
