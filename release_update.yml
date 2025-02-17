@@ -15,8 +15,8 @@
         pwd
         git branch
    #     git rev-parse --abbrev-ref HEAD
-      args:
-        chdir: /var/intellicon
+#      args:
+#        chdir: /var/intellicon
       register: git_branch_result
       changed_when: false
 
