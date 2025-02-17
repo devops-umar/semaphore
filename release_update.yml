@@ -1,7 +1,7 @@
 ---
 - name: Perform project tasks
-  hosts: localhost
-  gather_facts: no
+  hosts: all
+  become: yes
   tasks:
     - name: Move to project directory
       shell: cd /var/intellicon
