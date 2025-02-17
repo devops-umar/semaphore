@@ -2,6 +2,12 @@
   hosts: all
   become: yes
   tasks:
+    - name: Set safe directory for git
+      ansible.builtin.shell: "git config --global --add safe.directory /var/intellicon"
+      args:
+        chdir: /var/intellicon
+      become: yes
+
     - name: Change to project directory and get the current branch
       ansible.builtin.shell: |
         cd /var/intellicon
