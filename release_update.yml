@@ -10,7 +10,7 @@
     - name: Check if branch is production_tag
       fail:
         msg: "Branch is not set as production_tag"
-      when: git_branch_result.stdout != "production_tag"
+      when: git_branch_result.stdout | trim != "production_tag"
 
     - name: Git pull
       shell: "cd /var/intellicon && sudo git pull"
