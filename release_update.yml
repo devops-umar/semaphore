@@ -3,11 +3,8 @@
   hosts: all
   become: yes
   tasks:
-    - name: Move to project directory
-      shell: cd /var/intellicon
-
     - name: Check git branch
-      shell: git branch --show-current
+      shell: "cd /var/intellicon && git branch --show-current"
       register: git_branch_result
 
     - name: Check if branch is production_tag
@@ -16,9 +13,9 @@
       when: git_branch_result.stdout != "production_tag"
 
     - name: Git pull
-      ignore_errors: yes
-      shell: git pull
+      shell: "cd /var/intellicon && git pull"
       register: git_pull_result
+      ignore_errors: yes
 
     - name: Fail if there are conflicts
       fail:
@@ -26,31 +23,31 @@
       when: "'CONFLICT' in git_pull_result.stderr"
 
     - name: Docker compose pull
-      shell: docker-compose pull
+      shell: "cd /var/intellicon && docker compose pull"
 
     - name: Stop and remove intellicon_modules container
-      shell: docker rm -f intellicon_modules || true
+      shell: "cd /var/intellicon && docker rm -f intellicon_modules || true"
 
     - name: Recreate intellicon_modules container
-      shell: docker-compose up -d --force-recreate intellicon_modules
+      shell: "cd /var/intellicon && docker compose up -d --force-recreate intellicon_modules"
 
     - name: Recreate migration container
-      shell: docker-compose up -d --force-recreate migration
+      shell: "cd /var/intellicon && docker compose up -d --force-recreate migration"
 
     - name: Display logs of migration container
-      shell: docker-compose logs -f migration
+      shell: "cd /var/intellicon && docker-compose logs -f migration"
 
     - name: Wait for migration container to exit
       async: 100
       poll: 0
-      shell: sleep 0
+      shell: "cd /var/intellicon && sleep 0"
 
     - name: Docker compose down
-      shell: docker-compose down
+      shell: "cd /var/intellicon && docker compose down"
 
     - name: Wait for 2 minutes
       pause:
         seconds: 120
 
     - name: Docker compose up
-      shell: docker-compose up -d
+      shell: "cd /var/intellicon && docker compose up -d"
