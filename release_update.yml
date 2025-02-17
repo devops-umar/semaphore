@@ -22,11 +22,8 @@
         msg: "Git pull resulted in conflicts"
       when: "'CONFLICT' in git_pull_result.stderr"
     
-    - name: export intellicon_version
-      shell: "export INTELLICON_VERSION=3.0.32"
-
     - name: Docker compose pull
-      shell: "cd /var/intellicon && docker compose pull"
+      shell: "cd /var/intellicon && INTELLICON_VERSION=3.0.32 docker compose pull"
 
     - name: Stop and remove intellicon_modules container
       shell: "cd /var/intellicon && docker rm -f intellicon_modules || true"
