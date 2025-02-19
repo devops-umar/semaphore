@@ -6,3 +6,7 @@
     - name: Remove all dangling Docker images
       shell: docker rmi $(docker images -f dangling=true -qa)
       ignore_errors: yes
+
+    - name: Remove all unused images
+      shell: docker image prune -a -f
+      ignore_errors: yes
