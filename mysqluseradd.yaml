@@ -11,9 +11,9 @@
       shell: >
         MYSQL_PWD=$(docker exec {{ container_name }} printenv | grep MYSQL_ROOT_PASSWORD | cut -d '=' -f2) &&
         docker exec -i {{ container_name }} mysql -uroot -p"$MYSQL_PWD" -e "
-         # set @@GLOBAL.validate_password_special_char_count = 0;
-         # set @@GLOBAL.validate_password_number_count = 0;
-         # set @@GLOBAL.validate_password_mixed_case_count = 0;
+          set @@GLOBAL.validate_password_special_char_count = 0;
+          set @@GLOBAL.validate_password_number_count = 0;
+          set @@GLOBAL.validate_password_mixed_case_count = 0;
           CREATE USER IF NOT EXISTS 'data-analyzer'@'%' IDENTIFIED WITH 'mysql_native_password' BY 'd@t@-@n@lyzer!';
           GRANT SELECT ON yovo_db_cc.* TO 'data-analyzer'@'%';
         "
