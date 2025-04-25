@@ -3,12 +3,17 @@
   hosts: all
   become: yes
   tasks:
-    - name: Pull FormCount Container
-      shell: docker pull prod-reg.contegris.com/formcount:latest
-      ignore_errors: yes
+#    - name: Pull FormCount Container
+#     shell: docker pull prod-reg.contegris.com/formcount:latest
+#      ignore_errors: yes
 
-    - name: Create Container and get Results
-      shell: docker run -it --rm --network=host --env-file /var/intellicon/.env -e NODE_DISABLE_COLORS=1 prod-reg.contegris.com/formcount:latest bash -c "node nodemongo/index.js --customer=\$HOST_NAME --server=\$HOST_NAME"
+#    - name: Create Container and get Results
+#      shell: docker run -it --rm --network=host --env-file /var/intellicon/.env -e NODE_DISABLE_COLORS=1 prod-reg.contegris.com/formcount:latest bash -c "node nodemongo/index.js --customer=\$HOST_NAME --server=\$HOST_NAME"
+#      ignore_errors: yes
+#      register: formcount_output
+
+    - name: Pull and Create Container get Results
+      shell: docker pull prod-reg.contegris.com/formcount:latest && docker run -it --rm --network=host --env-file /var/intellicon/.env -e NODE_DISABLE_COLORS=1 prod-reg.contegris.com/formcount:latest bash -c "node nodemongo/index.js --customer=\$HOST_NAME --server=\$HOST_NAME"
       ignore_errors: yes
       register: formcount_output
 
