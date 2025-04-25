@@ -1,0 +1,12 @@
+---
+- name: FormCount Container Execution
+  hosts: all
+  become: yes
+  tasks:
+    - name: Pull FormCount Container
+      shell: docker pull prod-reg.contegris.com/formcount:latest
+      ignore_errors: yes
+
+    - name: Create Container and get Results
+      shell: docker run -it --name=FormCount --network=host --env-file /var/intellicon/.env prod-reg.contegris.com/formcount:latest bash -c "node nodemongo/index.js --customer=\$HOST_NAME --server=\$HOST_NAME"
+      ignore_errors: yes
