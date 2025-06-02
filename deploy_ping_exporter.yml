@@ -1,58 +1,69 @@
 ---
-- name: Deploy ping_exporter on VMs
+- name: Deploy ping_exporter
   hosts: all
-  become: yes
+  become: true
   vars:
-#    ping_exporter_version: "1.1.3"
     ping_exporter_port: 9568
     ping_target: "192.168.87.50"
 
   tasks:
-    - name: Download ping_exporter binary
+    - name: Create user for ping_exporter
+      user:
+        name: pingexp
+        shell: /usr/sbin/nologin
+        system: yes
+
+    - name: Download ping_exporter tarball
       get_url:
         url: "https://github.com/czerwonk/ping_exporter/releases/download/1.1.3/ping_exporter_1.1.3_linux_amd64.tar.gz"
         dest: /tmp/ping_exporter.tar.gz
 
-    - name: Extract ping_exporter
-      unarchive:
-        src: /tmp/ping_exporter.tar.gz
-        dest: /usr/local/bin/
-        remote_src: yes
-        extra_opts: [--strip-components=1]
-
-    - name: Make ping_exporter executable
+    - name: Create directory for extraction
       file:
-        path: /usr/local/bin/ping_exporter
+        path: /opt/ping_exporter
+        state: directory
         mode: '0755'
 
-    - name: Create ping_exporter user
-      user:
-        name: pingexporter
-        system: yes
-        shell: /sbin/nologin
+    - name: Extract ping_exporter to /opt
+      unarchive:
+        src: /tmp/ping_exporter.tar.gz
+        dest: /opt/ping_exporter
+        remote_src: yes
 
-    - name: Create systemd service file for ping_exporter
+    - name: Move binary to /usr/local/bin
+      copy:
+        remote_src: yes
+        src: "/opt/ping_exporter/ping_exporter"
+        dest: /usr/local/bin/ping_exporter
+        mode: '0755'
+        owner: pingexp
+        group: pingexp
+
+    - name: Create systemd service
       copy:
         dest: /etc/systemd/system/ping_exporter.service
         content: |
           [Unit]
-          Description=Prometheus Ping Exporter
-          After=network.target
+          Description=Ping Exporter
+          Wants=network-online.target
+          After=network-online.target
 
           [Service]
-          User=pingexporter
-          ExecStart=/usr/local/bin/ping_exporter --web.listen-address=:{{ ping_exporter_port }} --hosts={{ ping_target }}
+          User=pingexp
+          Group=pingexp
+          Type=simple
+          ExecStart=/usr/local/bin/ping_exporter --ping.destination {{ ping_target }}
           Restart=always
 
           [Install]
           WantedBy=multi-user.target
 
-    - name: Reload systemd daemon
+    - name: Reload systemd
       systemd:
         daemon_reload: yes
 
-    - name: Enable and start ping_exporter service
+    - name: Enable and start ping_exporter
       systemd:
         name: ping_exporter
-        state: started
         enabled: yes
+        state: started
