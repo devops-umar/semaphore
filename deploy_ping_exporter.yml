@@ -3,15 +3,15 @@
   hosts: all
   become: yes
   vars:
-    ping_exporter_version: "1.1.0"
+    ping_exporter_version: "1.1.3"
     ping_exporter_port: 9568
     ping_target: "192.168.87.50"
 
   tasks:
     - name: Download ping_exporter binary
       get_url:
-        url: "https://github.com/czerwonk/ping_exporter/releases/download/v{{ ping_exporter_version }}/ping_exporter-{{ ping_exporter_version }}.linux-amd64.tar.gz"
-        dest: /tmp/ping_exporter.tar.gz
+        url: "https://github.com/czerwonk/ping_exporter/releases/download/v{{ ping_exporter_version }}/ping_exporter-{{ ping_exporter_version }}.linux-amd64.deb"
+        dest: /tmp/ping_exporter.deb
 
     - name: Extract ping_exporter
       unarchive:
