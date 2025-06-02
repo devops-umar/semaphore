@@ -8,6 +8,7 @@
 
   tasks:
     - name: Create user for ping_exporter
+      become: true
       user:
         name: pingexp
         shell: /usr/sbin/nologin
