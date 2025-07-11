@@ -1,12 +1,15 @@
 ---
-- name: Remove specific ports from firewalld using shell with sudo
+- name: Remove specific ports from firewalld
   hosts: all
   become: yes
+  become_user: root
   gather_facts: no
 
   tasks:
-    - name: Remove ports 9443/tcp and 3478/tcp from firewalld (default zone)
-      shell: firewall-cmd --permanent --remove-port=9443/tcp && firewall-cmd --permanent --remove-port=3478/tcp
+    - name: Remove ports 9443/tcp and 3478/tcp from firewalld (docker zone)
+      shell: |
+        firewall-cmd --permanent --zone=docker --remove-port=9443/tcp
+        firewall-cmd --permanent --zone=docker --remove-port=3478/tcp
 
-    - name: Reload firewalld to apply changes
+    - name: Reload firewalld
       shell: firewall-cmd --reload
