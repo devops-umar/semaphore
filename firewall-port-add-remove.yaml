@@ -6,7 +6,7 @@
 
   tasks:
     - name: Remove ports 9443/tcp and 3478/tcp from firewalld (default zone)
-      shell: sudo firewall-cmd --permanent --remove-port=9443/tcp && sudo firewall-cmd --permanent --remove-port=3478/tcp
+      shell: firewall-cmd --permanent --remove-port=9443/tcp && firewall-cmd --permanent --remove-port=3478/tcp
 
     - name: Reload firewalld to apply changes
-      shell: sudo firewall-cmd --reload
+      shell: firewall-cmd --reload
