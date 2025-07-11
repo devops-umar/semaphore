@@ -13,7 +13,7 @@
     - name: Remove docker zone ports
       ansible.builtin.command: >
         firewall-cmd --permanent --zone=docker --remove-port=9443/tcp
-        become: true
+      become: true
 
     - name: Remove docker zone ports
       ansible.builtin.command: >
