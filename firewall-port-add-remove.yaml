@@ -5,16 +5,17 @@
   gather_facts: no
 
   tasks:
-    - name: Remove ports 9443/tcp and 3478/tcp from firewalld in docker zone
-      shell: |
-        sudo firewall-cmd --permanent --zone=docker --remove-port={{ item }}/tcp
-      with_items:
+    - name: Remove ports 9443/tcp and 3478/tcp from firewalld (default zone)
+      shell: sudo firewall-cmd --permanent --remove-port={{ item }}/tcp
+      loop:
         - 9443
         - 3478
       register: remove_result
       ignore_errors: yes
-      changed_when: remove_result.rc == 0
+      changed_when: remove_result is defined and
+                    remove_result.results | selectattr('rc', 'equalto', 0) | list | length > 0
 
     - name: Reload firewalld to apply changes
       shell: sudo firewall-cmd --reload
-      when: remove_result is defined and remove_result.rc == 0
+      when: remove_result is defined and
+            remove_result.results | selectattr('rc', 'equalto', 0) | list | length > 0
