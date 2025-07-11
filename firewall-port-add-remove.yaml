@@ -1,29 +1,26 @@
 ---
-- name: Remove specific ports from firewalld
+- name: Remove specific ports from firewalld docker zone
   hosts: all
   become: yes
-  become_user: root
   gather_facts: no
 
   tasks:
-#    - name: Remove ports 9443/tcp and 3478/tcp from firewalld (docker zone)
-#      shell: |
-#        firewall-cmd --permanent --zone=docker --remove-port=9443/tcp
-#        firewall-cmd --permanent --zone=docker --remove-port=3478/tcp
-    - name: Remove docker zone port 9443
-      ansible.builtin.command: >
-        firewall-cmd --permanent --zone=docker --remove-port=9443/tcp
-      become: true
+    - name: Remove port 9443/tcp from docker zone
+      ansible.posix.firewalld:
+        zone: docker
+        port: 9443/tcp
+        state: absent
+        permanent: yes
 
-    - name: Remove docker zone port 3478
-      ansible.builtin.command: >
-        firewall-cmd --permanent --zone=docker --remove-port=3478/tcp
-      become: true
+    - name: Remove port 3478/tcp from docker zone
+      ansible.posix.firewalld:
+        zone: docker
+        port: 3478/tcp
+        state: absent
+        permanent: yes
 
-    - name: Reload firewalld
-      ansible.builtin.command: >
-        firewall-cmd --reload
-      become: true
+    - name: Reload firewalld to apply changes
+      ansible.posix.firewalld:
+        state: reloaded
+      # become is inherited from play
 
-#    - name: Reload firewalld
-#      shell: firewall-cmd --reload
