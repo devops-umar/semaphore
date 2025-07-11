@@ -6,10 +6,19 @@
   gather_facts: no
 
   tasks:
-    - name: Remove ports 9443/tcp and 3478/tcp from firewalld (docker zone)
-      shell: |
+#    - name: Remove ports 9443/tcp and 3478/tcp from firewalld (docker zone)
+#      shell: |
+#        firewall-cmd --permanent --zone=docker --remove-port=9443/tcp
+#        firewall-cmd --permanent --zone=docker --remove-port=3478/tcp
+    - name: Remove docker zone ports
+      ansible.builtin.command: >
         firewall-cmd --permanent --zone=docker --remove-port=9443/tcp
+        become: true
+
+    - name: Remove docker zone ports
+      ansible.builtin.command: >
         firewall-cmd --permanent --zone=docker --remove-port=3478/tcp
+      become: true
 
     - name: Reload firewalld
       shell: firewall-cmd --reload
