@@ -1,0 +1,14 @@
+---
+- name: Remove specific ports from firewalld
+  hosts: all
+  become: yes
+
+  tasks:
+    - name: Remove ports 9443/tcp and 3478/tcp from firewalld
+      command: firewall-cmd --permanent --remove-port={9443,3478}/tcp
+      register: remove_ports
+      changed_when: "'success' in remove_ports.stdout"
+
+    - name: Reload firewalld to apply changes
+      command: firewall-cmd --reload
+      when: remove_ports.changed
