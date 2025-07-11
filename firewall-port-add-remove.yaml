@@ -10,15 +10,20 @@
 #      shell: |
 #        firewall-cmd --permanent --zone=docker --remove-port=9443/tcp
 #        firewall-cmd --permanent --zone=docker --remove-port=3478/tcp
-    - name: Remove docker zone ports
+    - name: Remove docker zone port 9443
       ansible.builtin.command: >
         firewall-cmd --permanent --zone=docker --remove-port=9443/tcp
       become: true
 
-    - name: Remove docker zone ports
+    - name: Remove docker zone port 3478
       ansible.builtin.command: >
         firewall-cmd --permanent --zone=docker --remove-port=3478/tcp
       become: true
 
     - name: Reload firewalld
-      shell: firewall-cmd --reload
+      ansible.builtin.command: >
+        firewall-cmd --reload
+      become: true
+
+#    - name: Reload firewalld
+#      shell: firewall-cmd --reload
